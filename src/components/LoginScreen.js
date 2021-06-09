@@ -1,4 +1,5 @@
 import React from 'react';
+import logo from './../stph.svg';
 
 class LoginScreen extends React.Component {
 
@@ -9,7 +10,7 @@ class LoginScreen extends React.Component {
                 <div class="w-full md:w-2/5 flex flex-col">
 
                     <div class="flex justify-center md:justify-start pt-12 md:pl-12 md:-mb-24">
-                        <a href="#" class="bg-black text-white font-bold text-xl p-4">Swiss TPH</a>
+                        <img class="mx-auto" src={logo} className="App-logo" alt="logo" />
                     </div>
 
                     <div class="flex flex-col justify-center md:justify-start my-auto pt-8 md:pt-0 px-8 md:px-24 lg:px-32">
@@ -35,7 +36,7 @@ class LoginScreen extends React.Component {
 
                 </div>
                 <div class="w-3/5">
-                    <img class="object-cover w-full h-screen hidden md:block" src="https://source.unsplash.com/IXUM4cJynP0"></img>
+                    <img class="object-cover w-full h-screen hidden md:block" src={process.env.PUBLIC_URL + '/bg.png'} />
                 </div>
             </div>
         );
