@@ -1,6 +1,7 @@
 import React from 'react';
 import logo from './../stph.svg';
 
+
 class LoginScreen extends React.Component {
 
 
@@ -53,29 +54,29 @@ class LoginScreen extends React.Component {
                         <img class="mx-auto" src={logo} className="App-logo" alt="logo" />
                     </div>
 
-                    <div class="flex flex-col justify-center md:justify-start my-auto pt-8 md:pt-0 px-8 md:px-24 lg:px-32">
+                    <div class="flex flex-col justify-center md:justify-start my-auto pt-8 md:pt-0 px-8 md:px-12 lg:px-32">
                         <p class="text-center text-3xl">Survey Dashboard</p>
-                        <form class="flex flex-col pt-3 md:pt-8" onsubmit="event.preventDefault();">
+                        <form class=" flex flex-col pt-3 md:pt-8" onsubmit="event.preventDefault();">
                             <div class="flex flex-col pt-4">
                                 <label for="oid" class="text-lg">Participant ID</label>
-                                <input type="text" id="oid" placeholder="086564211" class="shadow appearance-none border-none rounded w-full py-2 px-3 text-gray-700 mt-1 leading-tight focus:outline-none focus:ring-indigo-200 focus:ring-opacity-50"></input>
+                                <input type="text" id="oid" placeholder="086564211" class="shadow appearance-none border-none rounded w-full py-3 px-3 text-gray-700 mt-1 leading-tight focus:outline-none focus:ring-indigo-200 focus:ring-opacity-50"></input>
                             </div>
             
                             <div class="flex flex-col pt-4">
                                 <label for="email" class="text-lg">Date of Birth</label>
-                                <div class="inline-flex">
+                                <div class="lg:inline-flex">
 
-                                <select class="rounded mr-2 mt-1 border-none shadow focus:ring focus:ring-indigo-200 focus:ring-opacity-50 text-gray-700 leading-tight">
+                                <select class="block w-full lg:w-auto rounded md:mr-2 mt-1 py-3 border-none shadow focus:ring focus:ring-indigo-200 focus:ring-opacity-50 text-gray-700 leading-tight">
                                     <option value="">Day</option>
                                     {optionsForDay}
                                 </select>   
 
-                                <select class="flex-grow rounded mr-2 mt-1 border-none shadow focus:ring focus:ring-indigo-200 focus:ring-opacity-50 text-gray-700 leading-tight">
+                                <select class="block w-full lg:w-auto flex-grow rounded md:mr-2 mt-1 py-3 border-none shadow focus:ring focus:ring-indigo-200 focus:ring-opacity-50 text-gray-700 leading-tight">
                                     <option value="">Month</option>
                                     {optionsForMonth}
                                 </select>
       
-                                <select class="rounded mt-1 border-none shadow focus:ring focus:ring-indigo-200 focus:ring-opacity-50 text-gray-700 leading-tight">
+                                <select class="block w-full lg:w-auto rounded mt-1 py-3 border-none shadow focus:ring focus:ring-indigo-200 focus:ring-opacity-50 text-gray-700 leading-tight">
                                     <option value="">Year</option>
                                     {optionsForYear}
                                 </select>                                
