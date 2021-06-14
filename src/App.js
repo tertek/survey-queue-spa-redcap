@@ -1,21 +1,43 @@
-import React, { useState } from 'react';
+import React from 'react';
 //import axios from 'axios';
 import './App.css';
 
 import Dashboard from './components/Dashboard';
 import LoginScreen from './components/LoginScreen';
 
+class App extends React.Component {
 
-function App() {
+  constructor(props) {
+    super(props);
+    this.state = {
+      isAuthenticated: false,
+      isLoading: true,
+    }
+  }
 
-  //  App States
-  //  (https://serverless-stack.com/chapters/load-the-state-from-the-session.html)
-  const [isAuthenticated, userHasAuthenticated] = useState(false);
+  async componentDidMount() {
+    if(localStorage.getItem('token') != null) {
+      this.setState({isAuthenticated: true})
+    }
 
-  return (
-    isAuthenticated ? ( <Dashboard></Dashboard> ) : ( <LoginScreen></LoginScreen> )
-  )
+  }
   
+  render(){
+
+    return(
+      this.state.isAuthenticated ? ( 
+        <Dashboard></Dashboard>
+         ) : ( 
+         <LoginScreen 
+          isAuthenticated={this.state.isAuthenticated}
+          onUserHasAuthenticated={ () => this.setState( {isAuthenticated: true} ) }
+          /> 
+         )
+    )
+
+  }
 }
+
+
 
 export default App;
