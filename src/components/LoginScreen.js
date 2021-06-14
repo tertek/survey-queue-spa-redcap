@@ -24,7 +24,8 @@ class LoginScreen extends React.Component {
 
         const result = await this.api(17, 'token', 'create');
 
-        localStorage.setItem('token', result.token);
+        localStorage.removeItem('token');
+        //localStorage.setItem('token', result.token);
         this.setState({jwt: result.token});
 
         //this.doUserAuthentication()
@@ -119,12 +120,10 @@ class LoginScreen extends React.Component {
 
 
     handleLogin = (e) => {
-        e.preventDefault();        
-        this.setState(prevState => ({      
-            isToggleOn: !prevState.isToggleOn            
-        }));
+        e.preventDefault();
+            this.props.onHasStartedLoading();            
+            this.doUserAuthentication();
     }
-
 
     render() {
       

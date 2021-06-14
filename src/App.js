@@ -15,27 +15,28 @@ class App extends React.Component {
     }
   }
 
-  async componentDidMount() {
+  componentDidMount() {
+    // Check if there already is a token i.e. user was authenticated before
     if(localStorage.getItem('token') != null) {
       this.setState({isAuthenticated: true})
     }
-
   }
   
   render(){
-
-    return(
-      this.state.isAuthenticated ? ( 
-        <Dashboard></Dashboard>
-         ) : ( 
-         <LoginScreen 
-          isAuthenticated={this.state.isAuthenticated}
-          onUserHasAuthenticated={ () => this.setState( {isAuthenticated: true} ) }
-          /> 
-         )
+    return(      
+        this.state.isAuthenticated ? ( 
+          <Dashboard 
+            isLoading={this.state.isLoading}
+            onHasFinishedLoading= { () => { this.setState({isLoading: false } )}} />            
+        ) : (
+          <LoginScreen 
+            isAuthenticated={this.state.isAuthenticated}
+            onHasStartedLoading = { () => this.setState( {isLoading: true }) }
+            onUserHasAuthenticated={ () => this.setState( {isAuthenticated: true} ) } /> 
+        )
     )
-
   }
+
 }
 
 
