@@ -1,5 +1,8 @@
 import React  from 'react';
 import Loading from './Loading';
+import Navbar from './Navbar';
+import Header from './Header';
+import Main from './Main';
 
 
 class Dashboard extends React.Component {
@@ -17,7 +20,11 @@ class Dashboard extends React.Component {
     render() {
         return (
             this.props.isLoading ? ( <Loading></Loading> ) : (
-            <h1>Dashboard</h1>
+            <>
+                <Navbar />
+                <Header />
+                <Main />
+            </>
             )
         );
     }
