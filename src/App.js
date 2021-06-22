@@ -11,7 +11,7 @@ class App extends React.Component {
     super(props);
     this.state = {
       isAuthenticated: false,
-      isLoading: true,
+      isLoading: false,
     }
   }
 
