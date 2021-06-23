@@ -9,64 +9,16 @@ class LoginScreen extends React.Component {
         super(props);
         this.state = {
 
+            isAuthenticated: false,
             hasError: false,
-            errorMessage: '',
+            status: 0,
             errorStatus: '',
-            jwt: localStorage.getItem('token') || null,
+            validationMessage: 'Please fill user id and password to sign in.',
+            validColor: 'gray-400',
 
             isProcessing: false,
 
         }
-    }
-
-    //  Helpers
-    getOptionsForDay() {
-        var items = [];
-        for (let index = 1; index <= 31; index++) {
-            items.push(<option key={index}>{index}</option>);
-        }
-        return items;
-    }
-
-    getMonthNames(locale = 'en', format = 'long') {        
-        const formatter = new Intl.DateTimeFormat(locale, { month: format, timeZone: 'UTC' });
-        const months = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(month => {
-            const mm = month < 10 ? `0${month}` : month;
-            return new Date(`2017-${mm}-01T00:00:00+00:00`);
-        });
-    return months.map(date => formatter.format(date));
-    }
-
-    getOptionsForMonth() {
-        var items = [];
-        var months = this.getMonthNames(navigator.language.slice(0,2));
-        months.forEach((element, index) => {
-            items.push(<option value={index+1} key={index}>{element}</option>);
-        })
-        return items;
-    }
-
-    getOptionsForMonthSimple() {
-        var items = [];
-        for (let index = 1; index <= 12; index++) {
-            items.push(<option key={index}>{index}</option>);
-        }
-        return items;
-    }
-
-    getOptionsForYear() {
-        var items = [];
-        for (let index = new Date().getFullYear() - process.env.REACT_APP_MIN_AGE; index >= 1920; index--) {
-            items.push(<option key={index}>{index}</option>);
-        }
-        return items;
-    }
-
-    handleInputChange= (event) => {
-        const target = event.target;
-        const value = target.type === 'checkbox' ? target.checked : target.value;
-        const name = target.name;
-        this.setState({ [name]: value });
     }
 
     async componentDidMount(){
@@ -91,10 +43,8 @@ class LoginScreen extends React.Component {
 
     async authenticateUser() {
      
-
         this.setState({
             isProcessing: true,
-
         });
 
         let pass = '';
@@ -122,70 +72,97 @@ class LoginScreen extends React.Component {
                 url: process.env.REACT_APP_API_URL
             });
 
-            console.log(data)
+
+            console.log("Token created. Loggin user in..")
+
+            //  Set token in Local Storage
+            localStorage.setItem('token', data.token);
+
+            this.setState({
+                status: 200,               
+                isProcessing: false,
+                isAuthenticated: true,
+            });
+
+            this.handleValidation();
+
+            setTimeout(() => {
+                // Triggers Dashboard view
+                this.props.onHasStartedLoading();
+                this.props.onUserHasAuthenticated(); 
+            }, 500)
+
+            
 
         } catch(err) {
-            console.log(err);
+
             this.setState({
-                hasError: true,
-                errorMessage: err.response.data.error,
-                errorStatus: err.response.status
-            });
-            this.setState({
+                status: err.response.status,               
                 isProcessing: false
-            })
+            });
+
+            this.handleValidation();
+
+           
+            //hasError: true,
+            //errorMessage: error.response.data.error,
+            //errorStatus: error.response.status            
         }
 
     }
 
-    doUserAuthentication() {
-        this.props.onUserHasAuthenticated();
+    //  Handles
+
+    handleInputChange= (event) => {
+        const target = event.target;
+        const value = target.type === 'checkbox' ? target.checked : target.value;
+        const name = target.name;
+        this.setState({ [name]: value });
+        this.handleValidation();
     }
+    
+    handleValidation() {      
 
-    api = async (node = '', action = '') => {
-
-        try {
-
-            //  Define parameters for request
-            const params = {
-                pid: 17,
-                node: node,
-                action: action
-            };            
-
-            //  Get data from request
-            const { data } = await axios({
-                method: 'POST',
-                headers: { 'content-type': 'application/x-www-form-urlencoded' },
-                data: qs.stringify(params),
-                url: process.env.REACT_APP_API_URL
-            });
-
-            return data;
-
-        } catch(error) {
+        if(!this.state.user_id || !this.state.dob_day || !this.state.dob_month || !this.state.dob_year) {
             this.setState({
-                hasError: true,
-                errorMessage: error.response.data.error,
-                errorStatus: error.response.status
+                validationMessage: "Please fill user id and password to sign in.",
+                validColor: "gray-400"
             });
-
+        } 
+        
+        else {
+           
+            if(this.state.status === 403) {
+                this.setState({
+                    validationMessage: "Invalid username or password. Please try again.",
+                    validColor: "red-400"
+                });
+            } 
+            
+            if(this.state.status === 200) {
+                this.setState({
+                    validationMessage: "",
+                });
+            }
         }
-      };
 
+    }
 
     handleLogin = (e) => {
         e.preventDefault();
-        this.props.onHasStartedLoading();
         this.authenticateUser();
-            //this.doUserAuthentication();
     }
 
     render() {
+
+        //this.handleValidation();
       
+        //  Set input data
         const optionsForDay = this.getOptionsForDay();
         const optionsForMonth = this.getOptionsForMonth();
         const optionsForYear = this.getOptionsForYear();
+
+        const computedInputEmpty = !this.state.user_id || !this.state.dob_day || !this.state.dob_month || !this.state.dob_year ;
 
         return(
             <div className="w-full flex flex-wrap">
@@ -232,56 +209,61 @@ class LoginScreen extends React.Component {
                                 </div>
                             </div>
 
-                            <span className={"pt-4 "+(!this.state.hasError ? "text-green-500" : "text-red-700")} >
                             {
-                                (!this.state.user_id || !this.state.dob_day || !this.state.dob_month || !this.state.dob_year) &&
-                                <>
-                                Please fill in all fields.
-                                </>
-                            }
-                            {
-                                (this.state.hasError) &&
-                                <>
-                                {this.state.errorMessage}
-                                </>
-                            }
-
-                            </span>                                         
+                            <span className={"pt-4 text-center text-"+(this.state.validColor)}>
+                                {this.state.validationMessage}
+                            </span>
+                            }                             
 
                             <div className="flex flex-col pt-4">
                             <button 
-                                disabled={!this.state.user_id || !this.state.dob_day || !this.state.dob_month || !this.state.dob_year} 
+                                disabled={computedInputEmpty || this.state.isProcessing || this.state.isAuthenticated } 
                                 type="button" 
                                 onClick={this.handleLogin}
-                                className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-gray-600 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
+                                className={ ( !this.state.isAuthenticated ? "bg-gray-600" : "bg-green-600 disabled cursor-not-allowed" ) + " " +
+                                            ( this.state.isProcessing ? "cursor-wait" : "") + " " +
+                                            ( !this.state.isProcessing && !this.state.isAuthenticated  ? " hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500" : "") + " " +
+                                            " group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white "}>
                                     {
-                                        !this.state.isProcessing &&
-                                        <>
-                                    
+                                        (!this.state.isProcessing && !this.state.isAuthenticated) &&
+                                        <>                                    
                                         <span className="absolute left-0 inset-y-0 flex items-center pl-3">
                                         {/* Heroicon name: solid/lock-closed */}
     
                                         <svg className="h-5 w-5 text-gray-500 group-hover:text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                                         <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
                                         </svg>
-                                    </span>
-                                    Sign in
-                                    </>
+                                        </span>
+                                        Sign in
+                                        </>
                                     }
                                     {
                                         this.state.isProcessing &&
                                         <>
-                                    <span className="absolute left-0 inset-y-0 flex items-center pl-3">
-                                        {/* Heroicon name: solid/lock-closed */}
+                                        <span className="absolute left-0 inset-y-0 flex items-center pl-3">
+                                            {/* Heroicon name: solid/lock-closed */}
 
-                                        <svg className="animate-spin h-5 w-5 text-gray-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                                            <circle className="opacity-25" cx={12} cy={12} r={10} stroke="currentColor" strokeWidth={4} />
-                                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                                        </svg>
-                                    </span>
-                                    Processing
-                                    </>
-                                    } 
+                                            <svg className="animate-spin h-5 w-5 text-gray-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                                                <circle className="opacity-25" cx={12} cy={12} r={10} stroke="currentColor" strokeWidth={4} />
+                                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                                            </svg>
+                                        </span>
+                                        Processing
+                                        </>
+                                    }
+                                    {
+                                        this.state.isAuthenticated &&
+                                        <>
+                                            <span className="absolute left-0 inset-y-0 flex items-center pl-3">
+                                            {/* Heroicon name: solid/check-circle */}
+
+                                            <svg className="h-5 w-5 text-gray-500" xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                            </svg>                                            
+                                            </span>
+                                            Success
+                                        </>
+                                    }
                             </button>                            
                             </div>            
                         </form>
@@ -299,6 +281,49 @@ class LoginScreen extends React.Component {
         );
 
     }
+
+    //  Form Input Helpers
+    getOptionsForDay() {
+        var items = [];
+        for (let index = 1; index <= 31; index++) {
+            items.push(<option key={index}>{index}</option>);
+        }
+        return items;
+    }
+
+    getMonthNames(locale = 'en', format = 'long') {        
+        const formatter = new Intl.DateTimeFormat(locale, { month: format, timeZone: 'UTC' });
+        const months = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(month => {
+            const mm = month < 10 ? `0${month}` : month;
+            return new Date(`2017-${mm}-01T00:00:00+00:00`);
+        });
+    return months.map(date => formatter.format(date));
+    }
+
+    getOptionsForMonth() {
+        var items = [];
+        var months = this.getMonthNames(navigator.language.slice(0,2));
+        months.forEach((element, index) => {
+            items.push(<option value={index+1} key={index}>{element}</option>);
+        })
+        return items;
+    }
+
+    getOptionsForMonthSimple() {
+        var items = [];
+        for (let index = 1; index <= 12; index++) {
+            items.push(<option key={index}>{index}</option>);
+        }
+        return items;
+    }
+
+    getOptionsForYear() {
+        var items = [];
+        for (let index = new Date().getFullYear() - process.env.REACT_APP_MIN_AGE; index >= 1920; index--) {
+            items.push(<option key={index}>{index}</option>);
+        }
+        return items;
+    }    
 
 }
 

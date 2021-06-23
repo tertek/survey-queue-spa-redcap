@@ -22,13 +22,7 @@
   color: #61dafb;
 }
 
-button:disabled {
-  opacity: 0.75;
-  cursor: not-allowed;
-}
-
 input:disabled, select:disabled, input:read-only {
   opacity: 0.5;
-
 }
 
