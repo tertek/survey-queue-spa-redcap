@@ -12,11 +12,15 @@ class Dashboard extends React.Component {
 
     constructor(props) {
         super(props);
+
+        this.state = {
+            tokenData: ''
+        };
     }
 
     //  Sign out if token has expired 
 
-    setupPusher() {
+    async setupPusher() {
 
             // Enable pusher logging - don't include this in production
             console.log("Enable Pusher..");
@@ -45,12 +49,7 @@ class Dashboard extends React.Component {
         } else {
 
             console.log("Stored token detected..");
-
-            const tokenData = decodeToken(this.props.token);
-            console.log(tokenData);
-
-            this.setupPusher();
-
+            //this.setupPusher();
 
             setTimeout(() => {
                 this.props.onHasFinishedLoading();
@@ -58,13 +57,20 @@ class Dashboard extends React.Component {
 
         }
 
+
     }    
 
     render() {
+
+        const data = decodeToken(this.props.token);
+
+        const username = data.firstname + " " + data.lastname;
+
         return (
             this.props.isLoading ? ( <Loading></Loading> ) : (
             <>
-                <Navbar 
+                <Navbar
+                    userName={username}
                     onClickedSignout={ () => { this.props.onHasSignedOut() }} />
                 <Header />
                 <Main />

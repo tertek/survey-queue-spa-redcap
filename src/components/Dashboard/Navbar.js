@@ -11,7 +11,6 @@ class Navbar extends React.Component {
       }
   }
 
-
     render(){
 
         return (            
@@ -47,13 +46,13 @@ class Navbar extends React.Component {
                     <div className="flex-1 flex items-center justify-center sm:items-stretch sm:justify-start">
                       <div className="flex-shrink-0 flex items-center">
                         <img className="block lg:block h-8 w-auto" src={signet} alt="STPH" />
-                        <div className="text-white ml-5 font-sans text-lg antialiased font-medium tracking-wide leading-normal uppercase">STPH - Survey Dashboard</div>
+                        <div className="text-white ml-5 font-sans text-lg antialiased font-medium tracking-wide leading-normal uppercase">Survey Dashboard - %STUDY_NAME%</div>
                       </div>
                       <div className="hidden sm:block sm:ml-6">
                         <div className="flex space-x-4 ml-4">
                           {/* Current: "bg-gray-900 text-white", Default: "text-gray-300 hover:bg-gray-700 hover:text-white" */}
-                          <a href="#1" className="bg-gray-900 text-white px-3 py-2 rounded-md text-sm font-medium" aria-current="page">My Surveys</a>
-                          <a href="#2" className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Study News</a>
+                          <a href="#1" className="bg-gray-900 text-white px-3 py-2 rounded-md text-sm font-medium" aria-current="page">Surveys</a>
+                          <a href="#2" className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">News</a>
                         </div>
                       </div>
                     </div>
@@ -67,7 +66,7 @@ class Navbar extends React.Component {
                               isDropdownHidden: !prevState.isDropdownHidden
                             })) }
                             className="inline-flex items-center bg-gray-800 p-1 rounded-full text-gray-400 hover:text-white">                                  
-                              Ekin Tertemiz 
+                              {this.props.userName}
                               <svg className="ml-2 mt-1 h-4 w-4" xmlns="http://www.w3.org/2000/svg"  fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                               </svg>

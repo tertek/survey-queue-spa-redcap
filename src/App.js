@@ -36,8 +36,8 @@ class App extends React.Component {
   
   render(){
     return(      
-        this.state.isAuthenticated ? ( 
-          <Dashboard 
+        this.state.isAuthenticated ? (
+          <Dashboard            
             isLoading={this.state.isLoading}
             token={this.state.storedJWt}
             onHasSignedOut = { () => {this.handleSignOut()} }
